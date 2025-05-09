@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Prevent secret file from being committed
+tokens/StoredCredential
