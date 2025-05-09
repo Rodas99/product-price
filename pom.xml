@@ -111,6 +111,7 @@
                 </configuration>
             </plugin>
         </plugins>
+        <finalName>price</finalName>
     </build>
 
 </project>
