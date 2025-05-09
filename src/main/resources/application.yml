@@ -1,0 +1,9 @@
+spring.application.name: price
+
+sheets:
+  id: 1lSO9iR_IUG2vnHOIz552_RCYj9jQZcSTO04f9gyOf7I
+  range: A2
+  valueInputOption: USER_ENTERED
+
+webPage:
+  url: https://www.amazon.es/-/pt/gp/product/B092KKLH93/ref=ox_sc_act_title_1?smid=APCX7ZHLZ1CYN&psc=1
