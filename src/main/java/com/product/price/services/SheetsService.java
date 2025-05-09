@@ -1,5 +1,6 @@
 package com.product.price.services;
 
+import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.googleapis.json.GoogleJsonError;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.product.price.oauth.OAuth.getCredentials;
+import static com.product.price.oauth.OAuth.loadStoredCredentialFromEnv;
 
 @Service
 @EnableScheduling
@@ -61,10 +63,13 @@ public class SheetsService {
             log.info("Appending data to Google Sheets...");
             ValueRange body = new ValueRange().setValues(values);
 
+            loadStoredCredentialFromEnv();
+            Credential credential = getCredentials(GoogleNetHttpTransport.newTrustedTransport());
+
             AppendValuesResponse result = new Sheets.Builder(
                     GoogleNetHttpTransport.newTrustedTransport(),
                     GsonFactory.getDefaultInstance(),
-                    getCredentials(GoogleNetHttpTransport.newTrustedTransport())
+                    credential
             ).setApplicationName(APPLICATION_NAME)
                     .build()
                     .spreadsheets()

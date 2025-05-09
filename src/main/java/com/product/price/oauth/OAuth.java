@@ -16,6 +16,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 
@@ -46,5 +50,17 @@ public class OAuth {
                 .build();
         LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
         return new AuthorizationCodeInstalledApp(flow, receiver).authorize("84708742319-bj4to5bhgfgk28cusffch6g40et8ufen.apps.googleusercontent.com");
+    }
+
+    public static void loadStoredCredentialFromEnv() throws IOException {
+        String encoded = System.getenv("GOOGLE_TOKEN_B64");
+        if (encoded == null || encoded.isEmpty()) {
+            throw new IllegalStateException("GOOGLE_TOKEN_B64 is not set.");
+        }
+
+        byte[] decoded = Base64.getDecoder().decode(encoded);
+        Path tokensDir = Paths.get("tokens");
+        Files.createDirectories(tokensDir);
+        Files.write(tokensDir.resolve("StoredCredential"), decoded);
     }
 }
