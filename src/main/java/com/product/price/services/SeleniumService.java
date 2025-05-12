@@ -36,7 +36,7 @@ public class SeleniumService {
         try {
             driver.get(URL);
 
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(40));
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(60));
 
             System.out.println("Current URL: " + driver.getCurrentUrl());
             System.out.println("Page source:\n" + driver.getPageSource());
