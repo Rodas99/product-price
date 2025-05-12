@@ -6,6 +6,7 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.AppendValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.product.price.oauth.OAuth;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,12 +15,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-
 
 @Service
 @EnableScheduling
@@ -41,8 +42,14 @@ public class SheetsService {
         this.sheetsService = OAuth.getSheetsService();
     }
 
-    @Scheduled(fixedRate = 30000)
-    public void updateSheet() {
+    @PostConstruct
+    public void runOnStartup() throws URISyntaxException, IOException {
+        updateSheet();
+    }
+
+    @Scheduled(cron = "0 0 9,17 * * *") // At 09:00 and 17:00 every day
+    public void updateSheet() throws URISyntaxException, IOException {
+
         log.info("Starting updateSheet() execution...");
 
         try {
@@ -50,7 +57,9 @@ public class SheetsService {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
             log.info("Retrieving price and title from SeleniumService...");
-            List<String> pageRetrieves = seleniumService.getPriceRetriever();
+            //List<String> pageRetrieves = seleniumService.getPriceRetriever();
+            List<String> pageRetrieves = seleniumService.getPriceRetrieverApi();
+
             log.info("Retrieved title: {}", pageRetrieves.get(0));
             log.info("Retrieved price: {}€", pageRetrieves.get(1));
 
@@ -80,4 +89,5 @@ public class SheetsService {
             log.error("Unexpected error in updateSheet(): {}...", e.getMessage(), e);
         }
     }
+
 }
