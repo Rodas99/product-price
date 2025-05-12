@@ -92,6 +92,6 @@ public class SeleniumService {
         JsonNode root = mapper.readTree(Request.get(uri)
                 .execute().returnContent().asString());
 
-        return Arrays.asList(root.path("product_name").asText(), root.path("product_price").asText());
+        return Arrays.asList(root.path("product_name").asText().split(" ")[0], root.path("product_price").asText().replace(".",","));
     }
 }

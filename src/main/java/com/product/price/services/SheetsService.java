@@ -64,7 +64,7 @@ public class SheetsService {
             log.info("Retrieved price: {}€", pageRetrieves.get(1));
 
             List<List<Object>> values = new ArrayList<>();
-            List<Object> row = List.of(pageRetrieves.get(0), pageRetrieves.get(1), "80", now.format(formatter));
+            List<Object> row = List.of(pageRetrieves.get(0), pageRetrieves.get(1), "90", now.format(formatter));
             values.add(row);
 
             log.info("Appending data to Google Sheets...");
