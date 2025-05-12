@@ -29,11 +29,13 @@ public class SeleniumService {
 
     public List<String> getPriceRetriever() throws IOException {
         WebDriver driver = new ChromeDriver(chromeOptions);
-
-        System.out.println("Current URL: " + driver.getCurrentUrl());
-        System.out.println("Page source:\n" + driver.getPageSource());
+        
+        ((JavascriptExecutor) driver).executeScript(
+                "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
+        );
 
         try {
+
             driver.get(URL);
 
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(60));
