@@ -29,7 +29,7 @@ public class SeleniumService {
 
     public List<String> getPriceRetriever() throws IOException {
         WebDriver driver = new ChromeDriver(chromeOptions);
-        
+
         ((JavascriptExecutor) driver).executeScript(
                 "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
         );

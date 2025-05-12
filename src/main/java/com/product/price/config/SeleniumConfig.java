@@ -23,6 +23,7 @@ public class SeleniumConfig {
         options.setExperimentalOption("useAutomationExtension", false);
         options.addArguments("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.7103.93 Safari/537.36");
         options.addArguments("--disable-gpu");
+        options.addArguments("--headless");
         options.addArguments("--no-sandbox");
         options.addArguments("--ignore-certificate-errors");
         options.addArguments("--window-size=1920,1080");
