@@ -5,6 +5,8 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Arrays;
+
 @Configuration
 public class SeleniumConfig {
 
@@ -16,7 +18,9 @@ public class SeleniumConfig {
     @Bean
     public ChromeOptions chromeOptions() {
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("user-agent=Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)");
+        options.setExperimentalOption("excludeSwitches", Arrays.asList("enable-automation"));
+        options.setExperimentalOption("useAutomationExtension", false);
+        options.addArguments("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36");
         options.addArguments("--headless");
         options.addArguments("--disable-gpu");
         options.addArguments("--no-sandbox");
