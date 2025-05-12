@@ -1,8 +1,6 @@
 package com.product.price.services;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -10,6 +8,10 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
@@ -25,8 +27,11 @@ public class SeleniumService {
         this.chromeOptions = chromeOptions;
     }
 
-    public List<String> getPriceRetriever() {
+    public List<String> getPriceRetriever() throws IOException {
         WebDriver driver = new ChromeDriver(chromeOptions);
+
+        System.out.println("Current URL: " + driver.getCurrentUrl());
+        System.out.println("Page source:\n" + driver.getPageSource());
 
         try {
             driver.get(URL);
@@ -51,6 +56,9 @@ public class SeleniumService {
 
             WebElement productTitle = titleContainer.findElement(By.id("productTitle"));
             String title = productTitle.getText().split(" ")[0];
+
+            File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+            Files.copy(screenshot.toPath(), Path.of("src/main/resources/screenshot.png"));
 
             return Arrays.asList(title, price);
 
