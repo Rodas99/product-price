@@ -1,13 +1,11 @@
 package com.product.price.services;
 
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.googleapis.json.GoogleJsonError;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
-import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.AppendValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
+import com.product.price.oauth.OAuth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,13 +13,13 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.product.price.oauth.OAuth.getCredentials;
-import static com.product.price.oauth.OAuth.loadStoredCredentialFromEnv;
 
 @Service
 @EnableScheduling
@@ -30,7 +28,7 @@ public class SheetsService {
     private static final Logger log = LoggerFactory.getLogger(SheetsService.class);
 
     private final SeleniumService seleniumService;
-    private static final String APPLICATION_NAME = "Product Price App";
+    private final Sheets sheetsService;
     @Value("${sheets.id}")
     private String spreadsheetId;
     @Value("${sheets.range}")
@@ -38,13 +36,13 @@ public class SheetsService {
     @Value("${sheets.valueInputOption}")
     private String valueInputOption;
 
-    public SheetsService(SeleniumService seleniumService) {
+    public SheetsService(SeleniumService seleniumService) throws GeneralSecurityException, IOException {
         this.seleniumService = seleniumService;
+        this.sheetsService = OAuth.getSheetsService();
     }
 
     @Scheduled(fixedRate = 30000)
     public void updateSheet() {
-
         log.info("Starting updateSheet() execution...");
 
         try {
@@ -63,16 +61,7 @@ public class SheetsService {
             log.info("Appending data to Google Sheets...");
             ValueRange body = new ValueRange().setValues(values);
 
-            loadStoredCredentialFromEnv();
-            Credential credential = getCredentials(GoogleNetHttpTransport.newTrustedTransport());
-
-            AppendValuesResponse result = new Sheets.Builder(
-                    GoogleNetHttpTransport.newTrustedTransport(),
-                    GsonFactory.getDefaultInstance(),
-                    credential
-            ).setApplicationName(APPLICATION_NAME)
-                    .build()
-                    .spreadsheets()
+            AppendValuesResponse result = sheetsService.spreadsheets()
                     .values()
                     .append(spreadsheetId, range, body)
                     .setValueInputOption(valueInputOption)

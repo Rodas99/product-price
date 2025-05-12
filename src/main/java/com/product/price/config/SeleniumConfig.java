@@ -10,13 +10,23 @@ public class SeleniumConfig {
 
     @PostConstruct
     void postConstructor() throws IOException {
-        // Copy chromedriver from resources to a temp file
-        InputStream in = getClass().getClassLoader().getResourceAsStream("driver/chromedriver.exe");
-        if (in == null) {
-            throw new FileNotFoundException("Chromedriver not found in resources/driver/");
+        String os = System.getProperty("os.name").toLowerCase();
+        String driverName;
+
+        if (os.contains("win")) {
+            driverName = "drivers/chromedriver.exe";
+        } else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) {
+            driverName = "drivers/chromedriver-linux";
+        } else {
+            throw new UnsupportedOperationException("Unsupported OS: " + os);
         }
 
-        File tempFile = File.createTempFile("chromedriver", ".exe");
+        InputStream in = getClass().getClassLoader().getResourceAsStream(driverName);
+        if (in == null) {
+            throw new FileNotFoundException("Chromedriver not found in resources: " + driverName);
+        }
+
+        File tempFile = File.createTempFile("chromedriver", os.contains("win") ? ".exe" : "");
         tempFile.deleteOnExit();
 
         try (OutputStream out = new FileOutputStream(tempFile)) {
@@ -25,6 +35,10 @@ public class SeleniumConfig {
             while ((len = in.read(buffer)) != -1) {
                 out.write(buffer, 0, len);
             }
+        }
+
+        if (!os.contains("win")) {
+            tempFile.setExecutable(true);
         }
 
         System.setProperty("webdriver.chrome.driver", tempFile.getAbsolutePath());

@@ -1,66 +1,39 @@
 package com.product.price.oauth;
 
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
-import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
-import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.client.util.store.FileDataStoreFactory;
+import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
-import com.product.price.services.SheetsService;
 
-import java.io.FileNotFoundException;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.security.GeneralSecurityException;
 import java.util.Base64;
 import java.util.Collections;
-import java.util.List;
 
 public class OAuth {
-
-    private static final List<String> SCOPES =
-            Collections.singletonList(SheetsScopes.SPREADSHEETS);
-    private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
-
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-    private static final String TOKENS_DIRECTORY_PATH = "tokens";
+    private static final String APPLICATION_NAME = "Product Price App";
 
-    public static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT)
-            throws IOException {
-        // Load client secrets.
-        InputStream in = SheetsService.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
-        if (in == null) {
-            throw new FileNotFoundException("Resource not found: " + CREDENTIALS_FILE_PATH);
+
+    public static Sheets getSheetsService() throws IOException, GeneralSecurityException {
+        String base64Credentials = System.getenv("GOOGLE_CREDENTIALS_BASE64");
+
+        if (base64Credentials == null) {
+            throw new IllegalStateException("Environment variable GOOGLE_CREDENTIALS_BASE64 not set");
         }
-        GoogleClientSecrets clientSecrets =
-                GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 
-        // Build flow and trigger user authorization request.
-        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-                HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
-                .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
-                .setAccessType("offline")
+        byte[] decoded = Base64.getDecoder().decode(base64Credentials);
+        InputStream credentialsStream = new ByteArrayInputStream(decoded);
+
+        GoogleCredential credential = GoogleCredential.fromStream(credentialsStream)
+                .createScoped(Collections.singleton(SheetsScopes.SPREADSHEETS));
+
+        return new Sheets.Builder(GoogleNetHttpTransport.newTrustedTransport(), JSON_FACTORY, credential)
+                .setApplicationName(APPLICATION_NAME)
                 .build();
-        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
-        return new AuthorizationCodeInstalledApp(flow, receiver).authorize("84708742319-bj4to5bhgfgk28cusffch6g40et8ufen.apps.googleusercontent.com");
-    }
-
-    public static void loadStoredCredentialFromEnv() throws IOException {
-        String encoded = System.getenv("GOOGLE_TOKEN_B64");
-        if (encoded == null || encoded.isEmpty()) {
-            throw new IllegalStateException("GOOGLE_TOKEN_B64 is not set.");
-        }
-
-        byte[] decoded = Base64.getDecoder().decode(encoded);
-        Path tokensDir = Paths.get("tokens");
-        Files.createDirectories(tokensDir);
-        Files.write(tokensDir.resolve("StoredCredential"), decoded);
     }
 }

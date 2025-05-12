@@ -32,5 +32,6 @@ build/
 ### VS Code ###
 .vscode/
 
-# Prevent secret file from being committed
+# Ignore service account credentials and stored credential
+src/main/resources/service-account-file.json
 tokens/StoredCredential
