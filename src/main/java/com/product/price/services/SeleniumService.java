@@ -16,20 +16,17 @@ import java.util.List;
 
 @Service
 public class SeleniumService {
-
     @Value("${webPage.url}")
     private String URL;
 
-    public List<String> getPriceRetriever() {
+    private final ChromeOptions chromeOptions;
 
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("user-agent=Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)");
-        options.addArguments("--headless");
-        options.addArguments("--disable-gpu");
-        options.addArguments("--no-sandbox");
-        options.addArguments("--ignore-certificate-errors");
-        options.addArguments("--window-size=1920,1080");
-        WebDriver driver = new ChromeDriver(options);
+    public SeleniumService(ChromeOptions chromeOptions) {
+        this.chromeOptions = chromeOptions;
+    }
+
+    public List<String> getPriceRetriever() {
+        WebDriver driver = new ChromeDriver(chromeOptions);
 
         try {
             driver.get(URL);
