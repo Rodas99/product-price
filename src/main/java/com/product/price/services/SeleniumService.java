@@ -36,7 +36,10 @@ public class SeleniumService {
         try {
             driver.get(URL);
 
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(40));
+
+            System.out.println("Current URL: " + driver.getCurrentUrl());
+            System.out.println("Page source:\n" + driver.getPageSource());
 
             WebElement priceContainer = wait.until(ExpectedConditions.presenceOfElementLocated(
                     By.cssSelector("div.a-section.a-spacing-none.aok-align-center.aok-relative")
