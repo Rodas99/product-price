@@ -53,7 +53,7 @@ public class SheetsService {
         log.info("Starting updateSheet() execution...");
 
         try {
-            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime now = LocalDateTime.now().plusHours(1);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
             log.info("Retrieving price and title from SeleniumService...");
