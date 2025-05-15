@@ -6,12 +6,9 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.AppendValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.product.price.oauth.OAuth;
-import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -23,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@EnableScheduling
 public class SheetsService {
 
     private static final Logger log = LoggerFactory.getLogger(SheetsService.class);
@@ -42,12 +38,6 @@ public class SheetsService {
         this.sheetsService = OAuth.getSheetsService();
     }
 
-    @PostConstruct
-    public void runOnStartup() throws URISyntaxException, IOException {
-        updateSheet();
-    }
-
-    @Scheduled(cron = "0 0 9,17 * * *") // At 09:00 and 17:00 every day
     public void updateSheet() throws URISyntaxException, IOException {
 
         log.info("Starting updateSheet() execution...");
