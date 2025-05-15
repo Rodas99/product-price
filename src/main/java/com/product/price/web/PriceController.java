@@ -1,12 +1,11 @@
 package com.product.price.web;
 
+import com.product.price.models.ProductPriceDto;
 import com.product.price.services.SheetsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -38,6 +37,25 @@ public class PriceController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("An unexpected error occurred.");
         }
+    }
+
+    @PostMapping("/run-price-controller-pa")
+    public ResponseEntity<String> runTaskV2(@RequestParam String token,
+                                            @RequestBody ProductPriceDto productPriceDto) {
+
+        if (!"mySecretToken123".equals(token)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        try {
+            service.updateSheetPA(productPriceDto);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An unexpected error occurred.");
+        }
+
+        return ResponseEntity.ok("Task executed successfully.");
+
     }
 
 }

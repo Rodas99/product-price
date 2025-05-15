@@ -5,6 +5,7 @@ import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.AppendValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
+import com.product.price.models.ProductPriceDto;
 import com.product.price.oauth.OAuth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +56,44 @@ public class SheetsService {
 
             List<List<Object>> values = new ArrayList<>();
             List<Object> row = List.of(pageRetrieves.get(0), pageRetrieves.get(1), "90", now.format(formatter));
+            values.add(row);
+
+            log.info("Appending data to Google Sheets...");
+            ValueRange body = new ValueRange().setValues(values);
+
+            AppendValuesResponse result = sheetsService.spreadsheets()
+                    .values()
+                    .append(spreadsheetId, range, body)
+                    .setValueInputOption(valueInputOption)
+                    .execute();
+
+            log.info("{} cells updated...", result.getUpdates().getUpdatedCells());
+
+        } catch (GoogleJsonResponseException e) {
+            GoogleJsonError error = e.getDetails();
+            if (error.getCode() == 404) {
+                log.error("Spreadsheet not found with ID '{}'...", spreadsheetId);
+            } else {
+                log.error("Error updating spreadsheet: {}...", e.getMessage(), e);
+            }
+        } catch (Exception e) {
+            log.error("Unexpected error in updateSheet(): {}...", e.getMessage(), e);
+        }
+    }
+
+    public void updateSheetPA(ProductPriceDto productPriceDto) {
+
+        log.info("Starting updateSheet() execution...");
+
+        try {
+            LocalDateTime now = LocalDateTime.now().plusHours(1);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+
+            log.info("Retrieved title: {}", productPriceDto.getProductTitle());
+            log.info("Retrieved price: {}€", productPriceDto.getProductPrice());
+
+            List<List<Object>> values = new ArrayList<>();
+            List<Object> row = List.of(productPriceDto.getProductTitle(), productPriceDto.getProductPrice(), "90", now.format(formatter));
             values.add(row);
 
             log.info("Appending data to Google Sheets...");
