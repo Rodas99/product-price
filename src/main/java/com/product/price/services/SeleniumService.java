@@ -79,12 +79,11 @@ public class SeleniumService {
     }
 
     public List<String> getPriceRetrieverApi() throws URISyntaxException, IOException {
-        String url = "https://www.amazon.es/-/pt/gp/product/B092KKLH93/ref=ox_sc_act_title_1?smid=APCX7ZHLZ1CYN&psc=1";
         String apikey = "8d6e294ba13754ba8fc6808b1867c3c77f62961f";
 
         URI uri = new URIBuilder("https://ecommerce.api.zenrows.com/v1/targets/amazon/products/")
                 .addParameter("apikey", apikey)
-                .addParameter("url", url)
+                .addParameter("url", URL)
                 .addParameter("country", "es")
                 .build();
 
