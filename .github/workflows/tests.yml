@@ -4,7 +4,7 @@ on:
   push:
 
 jobs:
-  build:
+  RunTests:
     runs-on: ubuntu-latest
     env:
       GOOGLE_CREDENTIALS_BASE64: ${{ secrets.GOOGLE_CREDENTIALS_BASE64 }}
