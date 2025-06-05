@@ -10,14 +10,9 @@ name: Java CI with Maven
 
 on:
   workflow_dispatch: #
-  push:
-    branches: [ "develop" ]
-  pull_request:
-    branches: [ "develop" ]
 
 jobs:
-  build:
-
+  RunCI:
     runs-on: ubuntu-latest
     env:
       GOOGLE_CREDENTIALS_BASE64: ${{ secrets.GOOGLE_CREDENTIALS_BASE64 }}
