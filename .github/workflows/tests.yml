@@ -1,0 +1,16 @@
+name: Run Tests
+
+on:
+  workflow_dispatch: #
+
+jobs:
+  RunTests:
+    runs-on: ubuntu-latest
+    env:
+      GOOGLE_CREDENTIALS_BASE64: ${{ secrets.GOOGLE_CREDENTIALS_BASE64 }}
+    steps:
+    - uses: actions/checkout@v4
+    - name: Run Tests
+      run: |
+        mvn install
+        mvn test
